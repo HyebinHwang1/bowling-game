@@ -34,8 +34,8 @@ export default function App() {
       (typeof frames[currentFrameNumber].score === "number"
         ? frames[currentFrameNumber].score
         : 0);
-    const random = 10;
-    // const random = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    const random = Math.floor(Math.random() * (max - min + 1)) + min;
     const isLastRoll = currentRoll === 1;
     const isSpare =
       isLastRoll &&
