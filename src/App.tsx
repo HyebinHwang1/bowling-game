@@ -35,7 +35,8 @@ export default function App() {
         ? frames[currentFrameNumber].score
         : 0);
 
-    const random = Math.floor(Math.random() * (max - min + 1)) + min;
+    // const random = Math.floor(Math.random() * (max - min + 1)) + min;
+    const random = 10;
     const isLastRoll = currentRoll === 1;
     const isSpare =
       isLastRoll &&
@@ -121,7 +122,11 @@ export default function App() {
     );
 
     if (isLastRoll) {
-      setCurrentFrameNumber(currentFrameNumber + 1);
+      if ((isLastFrame && isStrike) || (isLastFrame && isSpare)) {
+        setCurrentFrameNumber(currentFrameNumber + 1);
+      } else {
+        setCurrentFrameNumber(currentFrameNumber + 1);
+      }
     }
 
     if (isSpare) {
@@ -147,6 +152,10 @@ export default function App() {
       setCurrentFrameStatus("strike");
       setCurrentFrameNumber(currentFrameNumber + 1);
       setCurrentRoll(0);
+      return;
+    }
+    if (isLastFrame && currentRoll === 1) {
+      setCurrentRoll(2);
       return;
     }
 
