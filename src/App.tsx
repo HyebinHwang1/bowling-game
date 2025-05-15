@@ -35,8 +35,7 @@ export default function App() {
         ? frames[currentFrameNumber].score
         : 0);
 
-    // const random = Math.floor(Math.random() * (max - min + 1)) + min;
-    const random = 10;
+    const random = Math.floor(Math.random() * (max - min + 1)) + min;
     const isLastRoll = currentRoll === 1;
     const isSpare =
       isLastRoll &&
@@ -59,7 +58,8 @@ export default function App() {
 
     if (
       currentFrameNumber > 0 &&
-      frames[currentFrameNumber - 1].status === "strike"
+      frames[currentFrameNumber - 1].status === "strike" &&
+      currentRoll !== 2
     ) {
       setFrames((prev) =>
         prev.map((frame, i) => {
@@ -109,7 +109,7 @@ export default function App() {
             }),
             score: isSpare
               ? Score.Spare
-              : isStrike
+              : isStrike && currentRoll !== 2
               ? Score.Strike
               : typeof frame.score === "number"
               ? frame.score + random
@@ -117,17 +117,10 @@ export default function App() {
             status: isSpare ? "spare" : isStrike ? "strike" : null,
           };
         }
+
         return frame;
       })
     );
-
-    if (isLastRoll) {
-      if ((isLastFrame && isStrike) || (isLastFrame && isSpare)) {
-        setCurrentFrameNumber(currentFrameNumber + 1);
-      } else {
-        setCurrentFrameNumber(currentFrameNumber + 1);
-      }
-    }
 
     if (isSpare) {
       setCurrentFrameStatus("spare");
@@ -140,7 +133,7 @@ export default function App() {
             return {
               ...frame,
               rolls: [10, 0, 0],
-              score: 10 + random,
+              score: random,
             };
           }
           return frame;
@@ -154,11 +147,24 @@ export default function App() {
       setCurrentRoll(0);
       return;
     }
-    if (isLastFrame && currentRoll === 1) {
+    if (
+      isLastFrame &&
+      currentRoll === 1 &&
+      (frames[9].status === "strike" || frames[9].status === "spare")
+    ) {
       setCurrentRoll(2);
       return;
     }
 
+    if (isLastFrame && currentRoll === 2) {
+      setCurrentRoll(0);
+      setCurrentFrameNumber(currentFrameNumber + 1);
+      return;
+    }
+
+    if (currentRoll === 1) {
+      setCurrentFrameNumber(currentFrameNumber + 1);
+    }
     setCurrentRoll(currentRoll === 0 ? 1 : 0);
   };
 
@@ -169,8 +175,11 @@ export default function App() {
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              {frames.map((_, i) => (
-                <th key={i} className="border p-2 text-center w-20">
+              {frames.map((frame, i) => (
+                <th
+                  key={`${frame.score}-${i}`}
+                  className="border p-2 text-center w-20"
+                >
                   {i + 1}
                 </th>
               ))}
