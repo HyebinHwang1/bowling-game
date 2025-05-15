@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Score, type Frame } from "./type";
 
 export const useBowling = ({ initialFrames }: { initialFrames: Frame[] }) => {
@@ -10,15 +10,24 @@ export const useBowling = ({ initialFrames }: { initialFrames: Frame[] }) => {
   const [currentRoll, setCurrentRoll] = useState(0);
   const [currentScore, setCurrentScore] = useState<number | null>(null);
 
+  //   const callCount = useRef(0);
+
+  const getRandomNumber = (max: number, min: number) => {
+    // callCount.current = callCount.current + 1;
+    // if (callCount.current === 1) return 10;
+    // if (callCount.current === 2) return 10;
+    // if (callCount.current >= 3) return 3;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
   const handleRollBall = () => {
-    const min = 0;
     const max =
       10 -
       (typeof frames[currentFrameNumber].score === "number"
         ? frames[currentFrameNumber].score
         : 0);
 
-    const random = Math.floor(Math.random() * (max - min + 1)) + min;
+    const random = getRandomNumber(max, 0);
     const isLastRoll = currentRoll === 1;
     const isSpare =
       isLastRoll &&
@@ -64,7 +73,7 @@ export const useBowling = ({ initialFrames }: { initialFrames: Frame[] }) => {
       currentFrameNumber > 1 &&
       frames[currentFrameNumber - 1].status === "strike" &&
       frames[currentFrameNumber - 2].status === "strike" &&
-      currentRoll === 0
+      currentRoll !== 2
     ) {
       setFrames((prev) =>
         prev.map((frame, i) => {
